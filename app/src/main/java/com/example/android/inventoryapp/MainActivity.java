@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.android.inventoryapp.Data.DbHelper;
-import com.example.android.inventoryapp.Data.InvContract;
+import com.example.android.inventoryapp.Data.InvContract.InvEntry;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
         DbHelper dbHelper = new DbHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] projection = {InvContract.InvEntry._ID,
-                InvContract.InvEntry.COLUMN_PRODUCT_NAME,
-                InvContract.InvEntry.COLUMN_PRODUCT_PRICE,
-                InvContract.InvEntry.COLUMN_PRODUCT_QUANTITY,
+        String[] projection = {InvEntry._ID,
+                InvEntry.COLUMN_PRODUCT_NAME,
+                InvEntry.COLUMN_PRODUCT_PRICE,
+                InvEntry.COLUMN_PRODUCT_QUANTITY,
         };
 
-         cursor = db.query(InvContract.InvEntry.TABLE_NAME,
+         cursor = db.query(InvEntry.TABLE_NAME,
                 projection,
                 null,
                 null,
