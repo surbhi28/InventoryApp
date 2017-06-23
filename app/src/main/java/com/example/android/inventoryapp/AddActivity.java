@@ -22,7 +22,6 @@ public class AddActivity extends AppCompatActivity {
     private EditText name;
     private EditText price;
     private EditText quantity;
-    InvCursorAdapter mCursorAdapter;
 
 
     @Override

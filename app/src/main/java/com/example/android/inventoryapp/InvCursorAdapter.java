@@ -22,10 +22,6 @@ import com.example.android.inventoryapp.Data.InvContract.InvEntry;
 public class InvCursorAdapter extends CursorAdapter {
 
 
-    private TextView nameView;
-    private TextView priceView;
-    private TextView quantityView;
-
     public InvCursorAdapter(Context context, Cursor c){
         super(context,c, 0);
     }
@@ -49,10 +45,11 @@ public class InvCursorAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, final Context context,Cursor cursor) {
+
         // Find fields to populate in inflated template
-        nameView = (TextView) view.findViewById(R.id.product_name);
-        priceView = (TextView) view.findViewById(R.id.product_price);
-        quantityView = (TextView) view.findViewById(R.id.product_quantity);
+        TextView nameView = (TextView) view.findViewById(R.id.product_name);
+        TextView priceView = (TextView) view.findViewById(R.id.product_price);
+        final TextView quantityView = (TextView) view.findViewById(R.id.product_quantity);
         // Extract properties from cursor
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_NAME);
@@ -77,42 +74,28 @@ public class InvCursorAdapter extends CursorAdapter {
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InvCursorAdapter.sale(context, quantityView, rowId);
 
+                DbHelper dbHelper = new DbHelper(context);
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+                int items = Integer.parseInt(quantityView.getText().toString());
+                if (items > 0) {
+                    int mQuantitySold = items - 1;
+                    ContentValues values = new ContentValues();
+                    values.put(InvEntry.COLUMN_PRODUCT_QUANTITY, mQuantitySold);
+                    String selection = InvEntry._ID + "=?";
+                    String[] selectionArgs = new String[]{String.valueOf(rowId)};
+                    int rowsAffected = database.update(InvEntry.TABLE_NAME, values, selection, selectionArgs);
+                    if (rowsAffected != -1) {
+                        quantityView.setText(Integer.toString(mQuantitySold));
+                    }
+                } else
+                    Toast.makeText(context, "No Stock Left ", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-
-    public static int sale(Context context, TextView quantity, int rowNo) {
-
-        DbHelper dbHelper = new DbHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        int items = Integer.parseInt(quantity.getText().toString());
-        int mRowsAffected = 0;
-        if (items > 0) {
-            items--;
-            String mQuantitySold = Integer.toString(items);
-            ContentValues values = new ContentValues();
-            values.put(InvEntry.COLUMN_PRODUCT_QUANTITY, mQuantitySold);
-            String selection = InvEntry._ID + "=?";
-            String [] selectionArgs = new String[] {String.valueOf(rowNo)};
-            mRowsAffected = database.update(InvEntry.TABLE_NAME, values,selection ,selectionArgs);
-        } else {
-            Toast.makeText(context, "No Stock Left ", Toast.LENGTH_SHORT).show();
-        }
-        return mRowsAffected;
-    }
-
-    public void clear(Context context) {
-        DbHelper dbHelper = new DbHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        database.delete(InvEntry.TABLE_NAME,null,null);
-        notifyDataSetChanged();
-
-    }
 }
 
 
