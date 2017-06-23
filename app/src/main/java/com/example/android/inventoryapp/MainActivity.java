@@ -38,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume(){
         super.onResume();
-        mCursorAdapter.clear(this);
         displayData();
+        mCursorAdapter.clear(this);
+
     }
 
     private void displayData(){
