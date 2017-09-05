@@ -123,7 +123,11 @@ public class DetailsActivity extends AppCompatActivity {
             String name = cursor.getString(nameColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
+
             String photo = cursor.getString(imageColumnIndex);
+            mUri = Uri.parse(photo);
+
+            Log.i(LOG_TAG, "Uri: " + mUri);
 
             orderName = name;
 
@@ -145,7 +149,6 @@ public class DetailsActivity extends AppCompatActivity {
             productPrice.setOnTouchListener(mTouchListener);
             productQuantity.setOnTouchListener(mTouchListener);
             productPhoto.setOnTouchListener(mTouchListener);
-            //supplier.setOnTouchListener(TouchListener);
 
         }
 
