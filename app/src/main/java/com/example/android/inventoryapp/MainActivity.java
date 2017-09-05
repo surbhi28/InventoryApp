@@ -3,9 +3,11 @@ package com.example.android.inventoryapp;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -68,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
         mCursorAdapter = new InvCursorAdapter(this, cursor);
 
         invListView.setAdapter(mCursorAdapter);
+
+        invListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+
+                intent.setData(Uri.parse(Long.toString(id)));
+                startActivity(intent);
+
+            }
+        });
 
     }
 

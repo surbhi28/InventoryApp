@@ -51,7 +51,7 @@ public class InvCursorAdapter extends CursorAdapter {
         TextView priceView = (TextView) view.findViewById(R.id.product_price);
         final TextView quantityView = (TextView) view.findViewById(R.id.product_quantity);
         // Extract properties from cursor
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of inventory attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_NAME);
         int priceColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_PRICE);
         int quantityIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_QUANTITY);
@@ -62,10 +62,7 @@ public class InvCursorAdapter extends CursorAdapter {
         int productQuantity = cursor.getInt(quantityIndex);
        final int rowId = cursor.getInt(rowIndex);
 
-       /* if (TextUtils.isEmpty(petBreed)) {
-            petBreed = context.getString(R.string.unknown_breed);
-        }
-      */  // Populate fields with extracted properties
+        // Populate fields with extracted properties
         nameView.setText(productName);
         priceView.setText(Integer.toString(productPrice));
         quantityView.setText(Integer.toString(productQuantity));

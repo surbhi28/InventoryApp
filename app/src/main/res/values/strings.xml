@@ -2,5 +2,21 @@
     <string name="app_name">InventoryApp</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_description">Product Description</string>
+    <string name="set_product_price">Set Product Price</string>
+    <string name="set_supplier">Set Supplier</string>
+    <string name="set_quantity">Set Quantity</string>
+    <string name="order_more">Order More</string>
+    <string name="delete_dialog_msg">Delete this product?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
+    <string name="update_photo">Update Photo</string>
+    <string name="editor_delete_product_successful">Product deleted</string>
+    <string name="editor_delete_product_failed">Error with deleting product</string>
+    <string name="unsaved_changes_dialog_msg">You have unsave information are you sure you want to go back?</string>
+    <string name="discard">Discard and leave</string>
+    <string name="keep_editing">Lets finish this</string>
 
 </resources>
