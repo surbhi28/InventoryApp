@@ -125,25 +125,29 @@ public class DetailsActivity extends AppCompatActivity {
             int quantity = cursor.getInt(quantityColumnIndex);
 
             String photo = cursor.getString(imageColumnIndex);
-            mUri = Uri.parse(photo);
-
-            Log.i(LOG_TAG, "Uri: " + mUri);
-
-            orderName = name;
 
             // Update the views on the screen with the values from the database
             productName.setText(name);
             productPrice.setText(String.valueOf(price));
             productQuantity.setText(String.valueOf(quantity));
-            ViewTreeObserver viewTreeObserver = productPhoto.getViewTreeObserver();
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    productPhoto.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    productPhoto.setImageBitmap(getBitmapFromUri(mUri));
-                }
-            });
+            orderName = name;
 
+            if (photo == null) {
+                productPhoto.setImageResource(R.mipmap.ic_launcher);
+            } else {
+                mUri = Uri.parse(photo);
+
+                Log.i(LOG_TAG, "Uri: " + mUri);
+
+                ViewTreeObserver viewTreeObserver = productPhoto.getViewTreeObserver();
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        productPhoto.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        productPhoto.setImageBitmap(getBitmapFromUri(mUri));
+                    }
+                });
+            }
             //monitor activity so we can protect user
             productName.setOnTouchListener(mTouchListener);
             productPrice.setOnTouchListener(mTouchListener);
