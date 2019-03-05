@@ -22,8 +22,8 @@ import com.example.android.inventoryapp.Data.InvContract.InvEntry;
 public class InvCursorAdapter extends CursorAdapter {
 
 
-    public InvCursorAdapter(Context context, Cursor c){
-        super(context,c, 0);
+    public InvCursorAdapter(Context context, Cursor c) {
+        super(context, c, 0);
     }
 
     @Override
@@ -44,23 +44,25 @@ public class InvCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, final Context context,Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
 
         // Find fields to populate in inflated template
         TextView nameView = (TextView) view.findViewById(R.id.product_name);
         TextView priceView = (TextView) view.findViewById(R.id.product_price);
         final TextView quantityView = (TextView) view.findViewById(R.id.product_quantity);
+
         // Extract properties from cursor
         // Find the columns of inventory attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_NAME);
         int priceColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_PRICE);
         int quantityIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_QUANTITY);
         int rowIndex = cursor.getColumnIndex(InvEntry._ID);
+
         // Read the product attributes from the Cursor for the current product
         String productName = cursor.getString(nameColumnIndex);
         int productPrice = cursor.getInt(priceColumnIndex);
         int productQuantity = cursor.getInt(quantityIndex);
-       final int rowId = cursor.getInt(rowIndex);
+        final int rowId = cursor.getInt(rowIndex);
 
         // Populate fields with extracted properties
         nameView.setText(productName);

@@ -19,5 +19,6 @@ public class InvContract {
         public static final String COLUMN_PRODUCT_PRICE = "price";
         public static final String COLUMN_PRODUCT_QUANTITY = "quantity";
         public static final String COLUMN_PRODUCT_IMAGE = "image";
+        public static final String COLUMN_PRODUCT_SUPPLIER = "supplier";
     }
 }

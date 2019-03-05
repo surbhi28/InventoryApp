@@ -30,6 +30,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.example.android.inventoryapp.R.id.price;
+import static com.example.android.inventoryapp.R.id.quantity;
+
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -39,6 +42,7 @@ public class DetailsActivity extends AppCompatActivity {
     EditText productPrice;
     EditText productQuantity;
     ImageView productPhoto;
+    EditText productSupplier;
     Button changePhoto;
     Button decreaseQuantity;
     Button increaseQuantity;
@@ -46,10 +50,12 @@ public class DetailsActivity extends AppCompatActivity {
     Button updateProduct;
     Button deleteProduct;
     DbHelper dbHelper;
+    private String supEmail;
     private boolean mInventoryHasChanged = false;
     private String orderName;
     private Uri mUri;
-    private String currentPhotoUri = "no images";
+    private String currentPhotoPath = "no images";
+
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -80,7 +86,8 @@ public class DetailsActivity extends AppCompatActivity {
                 InvEntry.COLUMN_PRODUCT_NAME,
                 InvEntry.COLUMN_PRODUCT_PRICE,
                 InvEntry.COLUMN_PRODUCT_QUANTITY,
-                InvEntry.COLUMN_PRODUCT_IMAGE
+                InvEntry.COLUMN_PRODUCT_IMAGE,
+                InvEntry.COLUMN_PRODUCT_SUPPLIER
         };
         String selection = InvEntry._ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
@@ -94,9 +101,10 @@ public class DetailsActivity extends AppCompatActivity {
                 null);
 
         productName = (EditText) findViewById(R.id.name);
-        productPrice = (EditText) findViewById(R.id.price);
-        productQuantity = (EditText) findViewById(R.id.quantity);
+        productPrice = (EditText) findViewById(price);
+        productQuantity = (EditText) findViewById(quantity);
         productPhoto = (ImageView) findViewById(R.id.image_product_photo);
+        productSupplier = (EditText) findViewById(R.id.supplier);
         changePhoto = (Button) findViewById(R.id.change_photo_button);
         decreaseQuantity = (Button) findViewById(R.id.dec);
         increaseQuantity = (Button) findViewById(R.id.inc);
@@ -117,25 +125,32 @@ public class DetailsActivity extends AppCompatActivity {
             int priceColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_QUANTITY);
             int imageColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_IMAGE);
+            int supplierColumnIndex = cursor.getColumnIndex(InvEntry.COLUMN_PRODUCT_SUPPLIER);
 
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
-
             String photo = cursor.getString(imageColumnIndex);
+            String supplier = cursor.getString(supplierColumnIndex);
+
 
             // Update the views on the screen with the values from the database
             productName.setText(name);
             productPrice.setText(String.valueOf(price));
             productQuantity.setText(String.valueOf(quantity));
+            productSupplier.setText(supplier);
+
+            Log.i(LOG_TAG, "String" + photo);
+
             orderName = name;
 
-            if (photo == null) {
+            if ((photo == null) || (photo.equals("no images"))) {
                 productPhoto.setImageResource(R.mipmap.ic_launcher);
             } else {
                 mUri = Uri.parse(photo);
+                currentPhotoPath = mUri.toString();
 
                 Log.i(LOG_TAG, "Uri: " + mUri);
 
@@ -189,8 +204,11 @@ public class DetailsActivity extends AppCompatActivity {
         orderSupplier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String[] TO = {supEmail};
+                supEmail = "orders@" + productSupplier.getText().toString() + ".com";
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_EMAIL, TO);
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Order for " + orderName);
 
                 try {
@@ -250,9 +268,10 @@ public class DetailsActivity extends AppCompatActivity {
                 mUri = resultData.getData();
                 Log.i(LOG_TAG, "Uri: " + mUri.toString());
 
-                currentPhotoUri = mUri.toString();
+                currentPhotoPath = mUri.toString();
 
                 productPhoto.setImageBitmap(getBitmapFromUri(mUri));
+
             }
         }
     }
@@ -346,15 +365,41 @@ public class DetailsActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private int saveProduct(long productNo) {
+    private void saveProduct(long productNo) {
         //Read values from text fields
         String name = productName.getText().toString().trim();
         String priceString = productPrice.getText().toString().trim();
         String quantityString = productQuantity.getText().toString().trim();
+        String supplierString = productSupplier.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(priceString) && TextUtils.isEmpty(quantityString) && currentPhotoUri.equals("no images")) {
-            return 0;
+        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(priceString)
+                && TextUtils.isEmpty(quantityString) && currentPhotoPath.equals("no images")
+                && TextUtils.isEmpty(supplierString)) {
+            Toast.makeText(this, "Fill all the fields", Toast.LENGTH_LONG).show();
+            return;
         }
+
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, "Product requires a name", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(priceString)) {
+            Toast.makeText(this, "Product requires a price", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(quantityString)) {
+            Toast.makeText(this, "Product requires a quantity", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((currentPhotoPath == "no images") || (TextUtils.isEmpty(currentPhotoPath))) {
+            Toast.makeText(this, "Product requires a photo", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(supplierString)) {
+            Toast.makeText(this, "Product requires a supplier", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Integer price = Integer.parseInt(priceString);
         Integer quantity = Integer.parseInt(quantityString);
 
@@ -362,35 +407,32 @@ public class DetailsActivity extends AppCompatActivity {
         values.put(InvEntry.COLUMN_PRODUCT_NAME, name);
         values.put(InvEntry.COLUMN_PRODUCT_PRICE, price);
         values.put(InvEntry.COLUMN_PRODUCT_QUANTITY, quantity);
-        values.put(InvEntry.COLUMN_PRODUCT_IMAGE, currentPhotoUri);
+        values.put(InvEntry.COLUMN_PRODUCT_IMAGE, currentPhotoPath);
+        values.put(InvEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
 
-        if (name == null) {
-            throw new IllegalArgumentException("Product requires a name");
-        }
         if (price != null && price < 0) {
-            throw new IllegalArgumentException("Product requires a valid price");
+            Toast.makeText(this, "Product requires a valid price", Toast.LENGTH_SHORT).show();
+            return;
         }
         if (quantity != null && quantity < 0) {
-            throw new IllegalArgumentException("Product requires a valid quantity");
-        }
-        if (currentPhotoUri == null) {
-            throw new IllegalArgumentException("Product requires a photo");
+            Toast.makeText(this, "Product requires a valid quantity", Toast.LENGTH_SHORT).show();
+            return;
         }
         if (values.size() == 0) {
-            return 0;
+            return;
         }
 
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         String selection = InvEntry._ID + "=?";
+
         String[] selectionArgs = new String[]{String.valueOf(productNo)};
         int rowsAffected = database.update(InvEntry.TABLE_NAME, values, selection, selectionArgs);
         if (rowsAffected != 0) {
             Toast.makeText(this, "Product Updated", Toast.LENGTH_SHORT).show();
-        } else
+        } else {
             Toast.makeText(this, "Error in updating Product", Toast.LENGTH_SHORT).show();
 
-        return rowsAffected;
-
+        }
     }
 
     /**

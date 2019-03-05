@@ -26,7 +26,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 InvEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL," +
                 InvEntry.COLUMN_PRODUCT_PRICE + " INTEGER NOT NULL," +
                 InvEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NOT NULL DEFAULT 0," +
-                InvEntry.COLUMN_PRODUCT_IMAGE + " TEXT);" ;
+                InvEntry.COLUMN_PRODUCT_IMAGE + " TEXT," +
+                InvEntry.COLUMN_PRODUCT_SUPPLIER + " TEXT);";
         db.execSQL(SQL_CREATE_INV_TABLE);
 
     }
